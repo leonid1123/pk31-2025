@@ -73,6 +73,3 @@ class App(toga.App):
 if __name__ == "__main__":
     app = App("Что-то на тоге", "оно есть")
     app.main_loop()
-
-
-#https://ctxt.io/2/AAB4bQUQEQ

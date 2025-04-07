@@ -2,6 +2,17 @@ from tkinter import *
 import pymysql.cursors
 
 
+#https://github.com/leonid1123/pk31-2025
+class Keyboards:
+    def __init__(self, _name, _price, _id):
+        self.name = _name
+        self.price = _price
+        self.id = _id
+
+    def __str__(self):
+        return f"Название: {self.name}, цена: {self.price}"
+
+
 class App:
     def __init__(self):
         self.win = Tk()
@@ -38,8 +49,11 @@ class App:
         self.keyboards = []
         for item in ans:
             tmp = f"Название:{item[1]}, цена:{item[2]}"
-            self.keyboards.append(tmp)
+            keyboard = Keyboards(item[1],item[2],item[0])
+            self.keyboards.append(keyboard)
         self.keyboards_var.set(self.keyboards)
+        for item in self.keyboards:
+            print("id:",item.id)
 
     def chpun(self):
         name = self.name_entry.get()
@@ -56,8 +70,15 @@ class App:
         #DELETE FROM `keyboard` WHERE `keyboard`.`id` = 6
         cursor = self.cnx.cursor()
         del_str="DELETE FROM `keyboard` WHERE `keyboard`.`id` = %s"
-        print(self.keyboard_view.curselection())
-
+        self.num = self.keyboard_view.curselection()
+        print("список выбранных позиций:",self.num)
+        if self.num:
+            self.num = self.num[0]
+            #print(self.keyboards[num].id)
+        print("выбранная позиция", self.num)
+        cursor.execute(del_str,(self.keyboards[self.num].id,))
+        self.cnx.commit()
+        self.select_keyboards()
 
 
 app = App()
