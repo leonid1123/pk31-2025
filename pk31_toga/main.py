@@ -78,7 +78,7 @@ class App(toga.App):
         self.cur.execute("SELECT note FROM notes WHERE id_user = 2")
         ans = self.cur.fetchone()
         print(ans)
-        if len(ans) > 0:
+        if ans:
             self.note_view.value = ans
 
         self.note_window.show()
