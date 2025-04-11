@@ -75,9 +75,10 @@ class App:
         selected = self.keyboard_view.curselection()
         if selected:
             keyboard_id = self.keyboards[selected[0]].id
-            cursor.execute("DELETE FROM `keyboard` WHERE `keyboard`.`id` = %s", (keyboard_id,))
+            cursor.execute("DELETE FROM keyboard WHERE keyboard.id = %s", (keyboard_id,))
             self.cnx.commit()
             self.select_keyboards()
+            self.btn.config(text="Добавить", command=self.chpun)
 
     def get_object(self, event):
         """Метод для заполнения полей данными выбранной записи."""
