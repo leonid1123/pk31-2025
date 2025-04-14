@@ -2,6 +2,7 @@ import toga
 from toga.style.pack import ROW, COLUMN, Pack, RIGHT
 import sqlite3
 
+
 #https://github.com/leonid1123/pk31-2025/tree/master/pk31_toga
 class App(toga.App):
     def button_handler(self, widget):
@@ -82,7 +83,6 @@ class App(toga.App):
             self.note_view.value = ans
 
         self.note_window.show()
-
 
 
 if __name__ == "__main__":
