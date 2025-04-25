@@ -1,5 +1,6 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QWidget, QVBoxLayout, QLabel
+from PyQt6.QtWidgets import QApplication, QMainWindow, \
+    QPushButton, QWidget, QVBoxLayout, QLabel
 
 
 class SecondWindow(QWidget):

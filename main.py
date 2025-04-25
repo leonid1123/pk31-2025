@@ -37,6 +37,7 @@ class MainWindow(QWidget):
         self.cursor = self.cnx.cursor()
         with self.cursor:
             self.cursor.execute(sql)
+            self.cnx.commit()
             ans = self.cursor.fetchall()
         self.msg_view.clear()
         for item in ans:
