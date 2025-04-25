@@ -72,18 +72,27 @@ class App(toga.App):
         self.note_box = toga.Box()
         self.note_box.style.update(direction=COLUMN)
         self.note_view = toga.MultilineTextInput(style=self.style)
-        self.note_win_btn = toga.Button("OK",style=self.style)
+        self.note_win_btn = toga.Button("OK",style=self.style, on_press=self.edit_note)
         self.note_box.add(self.note_view)
         self.note_box.add(self.note_win_btn)
         self.note_window.content = self.note_box
-        self.cur.execute("SELECT note FROM notes WHERE id_user = 2")
+        self.cur.execute("SELECT note FROM notes WHERE id_user=1 AND id_notes=1")
         ans = self.cur.fetchone()
-        print(ans)
+        print(ans[0])
         if ans:
-            self.note_view.value = ans
+            self.note_view.value = ans[0]
 
         self.note_window.show()
 
+    def edit_note(self,widget):
+        new_text = self.note_view.value
+        sql = """UPDATE notes 
+        SET note=? 
+        WHERE id_user=1 AND id_notes=1 """
+        params = (new_text,)
+        self.cur.execute(sql,params)
+        self.con.commit()
+        self.note_window.close()
 
 if __name__ == "__main__":
     app = App("Что-то на тоге", "оно есть")
