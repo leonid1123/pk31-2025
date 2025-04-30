@@ -10,12 +10,13 @@ class App(toga.App):
         tmp_password = self.pass_entry.value
         self.con = sqlite3.connect("passwords.db")
         self.cur = self.con.cursor()
-        self.cur.execute("SELECT password FROM users WHERE login=?",(tmp,))
+        self.cur.execute("SELECT password, id FROM users WHERE login=?", (tmp,))
         ans = self.cur.fetchall()
         print(ans)
         if len(ans) > 0:
             p1 = ans[0]
             password = p1[0]
+            self.user_id = p1[1]
             if password == tmp_password:
                 print("можно")
                 self.notesWindow()
@@ -23,7 +24,7 @@ class App(toga.App):
                 print("неможно")
 
     def startup(self):
-        self.user_id = 2
+        self.user_id = None
         self.style = Pack(padding=5, flex=1, font_family='Helvetica', font_size=16)
         self.notes_window = None
         self.main_window = toga.MainWindow()
@@ -54,11 +55,11 @@ class App(toga.App):
             self.notes_window = toga.Window(title="Заметки")
             self.notes_box = toga.Box()
             self.notes_box.style.update(direction=COLUMN)
-            self.note1 = toga.Button("Заметка1", on_press=self.noteShow,style=self.style)
-            self.note2 = toga.Button("Заметка2",style=self.style)
-            self.note3 = toga.Button("Заметка3",style=self.style)
-            self.note4 = toga.Button("Заметка4",style=self.style)
-            self.note5 = toga.Button("Заметка5",style=self.style)
+            self.note1 = toga.Button("Заметка1", id='1', on_press=self.noteShow, style=self.style)
+            self.note2 = toga.Button("Заметка2", id='2', on_press=self.noteShow, style=self.style)
+            self.note3 = toga.Button("Заметка3", id='3', on_press=self.noteShow, style=self.style)
+            self.note4 = toga.Button("Заметка4", id='4', on_press=self.noteShow, style=self.style)
+            self.note5 = toga.Button("Заметка5", id='5', on_press=self.noteShow, style=self.style)
             self.notes_box.add(self.note1)
             self.notes_box.add(self.note2)
             self.notes_box.add(self.note3)
@@ -68,15 +69,21 @@ class App(toga.App):
             self.notes_window.show()
 
     def noteShow(self, widget):
+        print(widget.id)
         self.note_window = toga.Window(title="Заметка")
         self.note_box = toga.Box()
         self.note_box.style.update(direction=COLUMN)
         self.note_view = toga.MultilineTextInput(style=self.style)
-        self.note_win_btn = toga.Button("OK",style=self.style, on_press=self.edit_note)
+        self.note_win_btn = toga.Button("OK", style=self.style, on_press=self.edit_note)
         self.note_box.add(self.note_view)
         self.note_box.add(self.note_win_btn)
         self.note_window.content = self.note_box
-        self.cur.execute("SELECT note FROM notes WHERE id_user=1 AND id_notes=1")
+        self.id_note = int(widget.id) + (int(self.user_id) - 1) * 5
+        print(widget.id)
+        self.cur.execute(
+            "SELECT note FROM notes WHERE id_user=? AND id_notes=?",
+            (self.user_id, self.id_note)
+        )
         ans = self.cur.fetchone()
         print(ans[0])
         if ans:
@@ -84,15 +91,16 @@ class App(toga.App):
 
         self.note_window.show()
 
-    def edit_note(self,widget):
+    def edit_note(self, widget):
         new_text = self.note_view.value
         sql = """UPDATE notes 
         SET note=? 
-        WHERE id_user=1 AND id_notes=1 """
-        params = (new_text,)
-        self.cur.execute(sql,params)
+        WHERE id_user=? AND id_notes=? """
+        params = (new_text,self.user_id,self.id_note)
+        self.cur.execute(sql, params)
         self.con.commit()
         self.note_window.close()
+
 
 if __name__ == "__main__":
     app = App("Что-то на тоге", "оно есть")
